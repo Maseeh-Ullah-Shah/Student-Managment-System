@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Library</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>📚 Book Library</h1>
+
+      <div class="stats">
+        <div class="box">
+          <h3>Total</h3>
+          <span id="totalBooks">0</span>
+        </div>
+
+        <div class="box">
+          <h3>Read</h3>
+          <span id="readBooks">0</span>
+        </div>
+
+        <div class="box">
+          <h3>Unread</h3>
+          <span id="unreadBooks">0</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input
+          type="text"
+          id="search"
+          placeholder="Search by title, author or category..."
+        />
+
+        <select id="filter">
+          <option value="all">All Books</option>
+          <option value="read">Read</option>
+          <option value="unread">Unread</option>
+        </select>
+
+        <select id="sort">
+          <option value="">Sort</option>
+          <option value="az">Title A-Z</option>
+          <option value="za">Title Z-A</option>
+        </select>
+      </div>
+
+      <form id="bookForm">
+        <input type="text" id="title" placeholder="Book Title" />
+        <input type="text" id="author" placeholder="Author" />
+        <input type="text" id="category" placeholder="Category" />
+        <input type="number" id="pages" placeholder="Pages" />
+        <button type="submit" id="submitBtn">Add Book</button>
+      </form>
+
+      <div id="booksContainer">
+        <!-- Your JS will render cards here -->
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Book Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Pages</th>
+                <th>Status</th>
+                <th>Read / Unread</th>
+                <th class="action">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <!-- Your JavaScript code insert here. -->
+              <tr>
+                <td>Atomic Habits</td>
+                <td>James Clear</td>
+                <td>Self Help</td>
+                <td>320</td>
+                <td>Available</td>
+
+                <td>
+                  <button class="toggle-btn">Unread</button>
+                </td>
+
+                <td class="action">
+                  <button class="edit-btn">Edit</button>
+                  <button class="delete-btn">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
