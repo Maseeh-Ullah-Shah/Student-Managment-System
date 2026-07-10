@@ -1,59 +1,58 @@
-// select the form
 const form = document.querySelector("form");
-//select all the inputs inside the form.
-const controls = document.querySelector(".controls");
-
-const submitBtn = document.querySelector("#submitBtn");
 const title = document.querySelector("#title");
 const author = document.querySelector("#author");
 const category = document.querySelector("#category");
 const pages = document.querySelector("#pages");
-//i select the tbody inside table to target it.
+
 const tbody = document.querySelector("tbody");
-const sort = document.querySelector("#sort");
-let read = 0;
-const readBooks = document.querySelector("#readBooks");
-const unreadBooks = document.querySelector("#unreadBooks");
-let unRead = 0;
-const totalBooks = document.querySelector("#totalBooks");
-//i declared a variable to detect user edit.
-let editBookId = null;
-//2).i create an empty array at first.
-let booksData = JSON.parse(localStorage.getItem("bookData")) || [];
-//now to select search eleemnt
+
 const search = document.querySelector("#search");
-// 3).i made a reusable function rendering at global scope.
-function rendering(booksArray) {
+const filter = document.querySelector("#filter");
+const sort = document.querySelector("#sort");
+
+const totalBooks = document.querySelector("#totalBooks");
+const read = document.querySelector("#readBooks");
+const unread = document.querySelector("#unreadBooks");
+
+let booksData = JSON.parse(localStorage.getItem("booksInfo")) || []; //state
+
+let editBookId = null;
+function renderBooks(bookArray) {
   tbody.innerHTML = "";
   let row = "";
-  booksArray.forEach((elem, index) => {
+  bookArray.forEach((element) => {
     row += `<tr>
-                <td>${elem.title}</td>
-                <td>${elem.author}</td>
-                <td>${elem.category}</td>
-                <td>${elem.pages}</td>
+                <td>${element.title}</td>
+                <td>${element.author}</td>
+                <td>${element.category}</td>
+                <td>${element.pages}</td>
                 <td>Available</td>
+
                 <td>
-                  <button class="toggle-btn" data-id="${elem.id}">${elem.isRead ? "Read" : "Unread"}</button>
+                  <button class="toggle-btn" data-id="${element.id}">${element.isRead ? "Read" : "Unread"}</button>
                 </td>
 
                 <td class="action">
-                  <button class="edit-btn" data-id = ${elem.id} >Edit</button>
-                  <button class="delete-btn" data-id = ${elem.id}>Delete</button>
+                  <button class="edit-btn" data-id="${element.id}">Edit</button>
+                  <button class="delete-btn" data-id="${element.id}">Delete</button>
                 </td>
               </tr>`;
   });
   tbody.innerHTML = row;
-  totalBooks.textContent = booksData.length;
-  read = booksData.filter((book) => book.isRead === true).length;
-  unRead = booksData.length - read;
-
-  readBooks.textContent = read;
-  unreadBooks.textContent = unRead;
+  updateStates();
 }
-//Call this function at global if already have some data is stored.
-rendering(booksData);
-//now i add event listner on form
+renderBooks(booksData);
+
+//update stats
+function updateStates(){
+  const total = booksData.length;
+  const readBooks = booksData.filter((book)=>book.isRead === true).length;
+  const unreadBooks = total - readBooks;
+
+  totalBooks.textContent = total;
+  read.textContent = readBooks;
+  unread.textContent = unreadBooks;
+}
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (
@@ -64,152 +63,100 @@ form.addEventListener("submit", (event) => {
   )
     return;
   if (editBookId !== null) {
-    let book = booksData.find((elem) => elem.id === editBookId);
+    const book = booksData.find((elem) => elem.id === editBookId);
     book.title = title.value;
     book.author = author.value;
     book.category = category.value;
     book.pages = pages.value;
     editBookId = null;
-    submitBtn.textContent = "Add Book";
-  } else {
-    booksData.push({
-      id: Date.now(),
-      title: title.value,
-      author: author.value,
-      category: category.value,
-      pages: pages.value,
-      isRead: false,
-    });
+    localStorage.setItem("booksInfo", JSON.stringify(booksData));
+    renderBooks(booksData);
+    form.reset(); //to clear the form for next input
+    return;
   }
-  localStorage.setItem("bookData", JSON.stringify(booksData));
-  rendering(booksData);
-  form.reset();
+  booksData.push({
+    id: Date.now(),
+    title: title.value,
+    author: author.value,
+    category: category.value,
+    pages: pages.value,
+    isRead: false,
+  });
+  localStorage.setItem("booksInfo", JSON.stringify(booksData));
+  renderBooks(booksData);
+  form.reset(); //to clear the form for next input
 });
-
-//i made a function for edit and delete
-function edit(book) {
-  editBookId = Number(book.id);
+function toggleButton(bookId) {
+  console.log(bookId);
+  const book = booksData.find((elem) => elem.id === bookId);
+  book.isRead = !book.isRead;
+  localStorage.setItem("booksInfo", JSON.stringify(booksData));
+  renderBooks(booksData);
+}
+const submit = document.querySelector("#submitBtn");
+console.log(submit);
+function edit(bookId) {
+  editBookId = bookId;
+  const book = booksData.find((elem) => elem.id === bookId);
   title.value = book.title;
   author.value = book.author;
   category.value = book.category;
   pages.value = book.pages;
-  submitBtn.textContent = "Update Book";
+  submit.textContent = "Update Book";
 }
-function del(book) {
-  const isConfirm = confirm("Are you sure you want to Delete this item?");
-  if (isConfirm) {
-    booksData = booksData.filter((elem) => elem.id !== book.id);
-    localStorage.setItem("bookData", JSON.stringify(booksData));
-    rendering(booksData);
-  }
+function del(bookId) {
+  // const book = booksData.find((elem) => elem.id === bookId);
+  booksData = booksData.filter((elem) => elem.id !== bookId);
+  localStorage.setItem("booksInfo", JSON.stringify(booksData));
+  renderBooks(booksData);
 }
 tbody.addEventListener("click", (event) => {
-  //if user clicks other than element inside tbody  which have no data-id,that is why it return undefined,!undefined=true,reuturn statement run and function ends.
-  if (!event.target.dataset.id) return;
-  let bookId = Number(event.target.dataset.id); //Otherwise it will return NAN.If .find() does not find a matching item in the array, it returns undefined,
+  if (event.target.dataset.id === undefined) return;
 
-  let book = booksData.find((elem) => elem.id === bookId);
-  if (!book) return; //if all things works well but anyone is not matching ,it returns
-  if (event.target.classList.contains("toggle-btn")) {
-    book.isRead = !book.isRead;
-    localStorage.setItem("bookData", JSON.stringify(booksData));
-    rendering(booksData);
-    return;
-  }
+  let id = Number(event.target.dataset.id);
+  if (event.target.classList.contains("toggle-btn")) toggleButton(id);
   if (event.target.classList.contains("edit-btn")) {
-    edit(book);
+    edit(id);
     return;
   }
   if (event.target.classList.contains("delete-btn")) {
-    del(book);
+    del(id);
     return;
   }
 });
-
-search.addEventListener("input", () => {
-  const value = search.value.trim().toLowerCase();
-  if (value === "") {
-    rendering(booksData); //if search box is empty.
-    return;
-  }
-
-  const filterArray = booksData.filter((elem) => {
-    return (
-      elem.title.toLowerCase().includes(value) ||
-      elem.author.toLowerCase().includes(value) ||
-      elem.category.toLowerCase().includes(value)
-    );
-  });
-  if (filterArray.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='7'>Result not found</td></tr>";
-  } else rendering(filterArray);
-});
-//Now write code for sorting for drop down menu
-sort.addEventListener("change", () => {
-  let value = sort.value;
-  if (value == "") rendering(booksData);
-  else if (value == "az") {
-    booksData.sort((a, b) => a.title.localeCompare(b.title));
-    rendering(booksData);
-  } else {
-    booksData.sort((a, b) => b.title.localeCompare(a.title));
-    rendering(booksData);
-  }
-});
-
-//now display the book data when user select read or unread?
-const filter = document.querySelector("#filter");
-filter.addEventListener("change", () => {
-  let value = filter.value;
-  if (value == "all") rendering(booksData);
-  else if (value == "read") {
-    const filterArray = booksData.filter((elem) => elem.isRead == true);
-    rendering(filterArray);
-  } else {
-    const filterArray = booksData.filter((elem) => elem.isRead == false);
-    rendering(filterArray);
-  }
-});
-
-function updateUI() {
+function sorting() {
   let result = [...booksData];
-  // Search
-  if (search.value.trim() !== "") {
-    // Filter result by search
-    const value = search.value.trim().toLowerCase();
-    result = booksData.filter((elem) => {
-      return (
-        elem.title.toLowerCase().includes(value) ||
-        elem.author.toLowerCase().includes(value) ||
-        elem.category.toLowerCase().includes(value)
+  //declare variables
+  const searchValue = search.value.trim().toLowerCase();
+  const filterValue= filter.value;
+  const sortValue = sort.value;
+  //search
+  if(searchValue){
+    result = result.filter((book)=>{
+      return(
+        book.title.toLowerCase().includes(searchValue) ||
+        book.author.toLowerCase().includes(searchValue) ||
+        book.category.toLowerCase().includes(searchValue)
       );
     });
-    if (result.length === 0){
-      tbody.innerHTML = "<tr><td colspan='7'>Result not found</td></tr>";
-      return;
+  }
+  //filter
+  if(filterValue !== "all")
+  {
+    if(filterValue === "read"){
+      result = result.filter((book)=>book.isRead === true);
     }
-      
+    else
+      result = result.filter((book)=>book.isRead === false);
   }
-
-  // Read/Unread filter
-  if (filter.value !== "all") {
-    // Filter result by read/unread
-    if (filter.value === "read") result = result.filter((elem) => elem.isRead == true);
-    else result = result.filter((elem) => elem.isRead == false);
-  }
-
-  // Sort
-  if (sort.value === "az")
-    // Sort A-Z
-    result.sort((a, b) => a.title.localeCompare(b.title));
-
-  if (sort.value === "za")
-    // Sort Z-A
-    result.sort((a, b) => b.title.localeCompare(a.title));
-
-  rendering(result);
+  //sort
+    if(sortValue === "az"){
+      result.sort((a,b)=>a.title.localeCompare(b.title));
+    }
+    else
+      result.sort((a,b)=>b.title.localeCompare(a.title));
+renderBooks(result);
 }
-
-search.addEventListener("input", updateUI);
-filter.addEventListener("change", updateUI);
-sort.addEventListener("change", updateUI);
+search.addEventListener("input", sorting);
+filter.addEventListener("change", sorting);
+sort.addEventListener("change", sorting);
