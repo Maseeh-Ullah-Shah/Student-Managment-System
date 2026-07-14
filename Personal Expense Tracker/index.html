@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Expense Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>💰 Personal Expense Tracker</h1>
+
+      <form>
+        <div class="form-grid">
+          <div>
+            <label>Description</label>
+            <input
+              type="text"
+              id="description"
+              placeholder="Salary, Grocery, Internet Bill"
+            />
+          </div>
+
+          <div>
+            <label>Amount ($)</label>
+            <input type="number" id="amount" placeholder="100" />
+          </div>
+
+          <div>
+            <label>Category</label>
+
+            <select id="category">
+              <option value="">Select Category</option>
+              <option>Food</option>
+              <option>Transport</option>
+              <option>Shopping</option>
+              <option>Bills</option>
+              <option>Health</option>
+              <option>Entertainment</option>
+              <option>Education</option>
+              <option>Salary</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Type</label>
+
+            <select id="type">
+              <option value="">Select Type</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Date</label>
+
+            <input type="date" id="date" />
+          </div>
+        </div>
+
+        <button id="submitBtn">Add Transaction</button>
+      </form>
+
+      <hr />
+
+      <div class="controls">
+        <input
+          type="text"
+          id="search"
+          placeholder="Search description or category"
+        />
+
+        <select id="filter">
+          <option value="all">All Transactions</option>
+
+          <option value="income">Income</option>
+
+          <option value="expense">Expense</option>
+        </select>
+
+        <select id="sort">
+          <option value="">Sort By</option>
+          <option value="az">Description A-Z</option>
+          <option value="za">Description Z-A</option>
+          <option value="high">Highest Amount</option>
+          <option value="low">Lowest Amount</option>
+          <option value="new">Newest Date</option>
+          <option value="old">Oldest Date</option>
+        </select>
+        <button id="resetBtn">Reset Button</button>
+      </div>
+
+      <div class="stats">
+        <div class="card">
+          <h3>Total Income</h3>
+          <p id="totalIncome">$0</p>
+        </div>
+
+        <div class="card">
+          <h3>Total Expense</h3>
+          <p id="totalExpense"></p>
+        </div>
+
+        <div class="card">
+          <h3>Current Balance</h3>
+          <p id="balance">$0</p>
+        </div>
+
+        <div class="card">
+          <h3>Total Transactions</h3>
+          <p id="totalTransactions">0</p>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+
+            <th>Amount</th>
+
+            <th>Category</th>
+
+            <th>Type</th>
+
+            <th>Date</th>
+
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- JavaScript will render transactions here -->
+          <tr>
+            <td>Salary</td>
+
+            <td>$2000</td>
+
+            <td>Salary</td>
+
+            <td>
+              <span class="income">Income</span>
+            </td>
+
+            <td>2026-07-13</td>
+
+            <td>
+              <button class="edit-btn" data-id="1">Edit</button>
+
+              <button class="delete-btn" data-id="1">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
